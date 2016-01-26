@@ -1,0 +1,34 @@
+
+$init = <<END
+	sudo yum install -y vim
+	
+	#SUDO Puppet
+	sudo grep secure_path /etc/sudoers \
+	 | sed -e 's#$#:/opt/puppetlabs/bin#' \
+	 | sudo tee /etc/sudoers.d/puppet-securepath
+	 
+	#Install NGINX Module
+	sudo puppet module install jfryman-nginx
+	
+	#Apply NGINX Manifest
+	sudo puppet apply /vagrant/manifests/nginx.pp
+END
+
+Vagrant.configure("2") do |config|
+	
+	# use CentOS centos-7.2-64 Box
+	config.vm.box = "puppetlabs/centos-6.6-32-puppet"
+	config.vm.network :forwarded_port, host: 5000, guest: 80
+
+	#Virtual Box Settings
+	config.vm.provider :virtualbox do |vb|
+	  
+	end
+
+	
+	config.vm.define "webserver", primary:true do |webserver|
+	  webserver.vm.hostname="web-serv"
+	  webserver.vm.network :private_network, ip: "10.231.0.10"
+	  webserver.vm.provision "shell", inline: $init
+	end
+end
