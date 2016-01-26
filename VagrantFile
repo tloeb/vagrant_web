@@ -6,7 +6,15 @@ $init = <<END
 	sudo grep secure_path /etc/sudoers \
 	 | sed -e 's#$#:/opt/puppetlabs/bin#' \
 	 | sudo tee /etc/sudoers.d/puppet-securepath
-	 
+	
+	#COPY STATIC HTML
+	sudo mkdir /var/www/
+	sudo mkdir /var/www/testlab
+	sudo cp /vagrant/static/index.html /var/www/testlab
+
+	#Install Webbrowser
+	sudo yum install -y lynx
+
 	#Install NGINX Module
 	sudo puppet module install jfryman-nginx
 	
